@@ -3,3 +3,7 @@
 #intellij files and folders
 /.idea
 *.iml
+
+#ignore any future created txt files, unless we need them
+/data
+*.txt
