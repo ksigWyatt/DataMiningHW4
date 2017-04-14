@@ -1,4 +1,6 @@
+#Eclipse metadata files/folders
 */metadata
+.metadata*
 
 #intellij files and folders
 /.idea
