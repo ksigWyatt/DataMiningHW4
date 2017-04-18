@@ -21,6 +21,7 @@ public class Controller {
         try {
             wordCount.wordsSet();
             view.NavieBayesAlgo(wordCount.getSpamWordCount(), wordCount.getNonSpamWordCount());
+            view.KNNAlgo();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

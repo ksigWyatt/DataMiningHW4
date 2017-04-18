@@ -64,15 +64,9 @@ public class WordCounts {
         return spamWordCount;
     }
 
-    public void setSpamWordCount(HashMap<String, Integer> spamWordCount) {
-        this.spamWordCount = spamWordCount;
-    }
 
     public HashMap<String, Integer> getNonSpamWordCount() {
         return nonSpamWordCount;
     }
 
-    public void setNonSpamWordCount(HashMap<String, Integer> nonSpamWordCount) {
-        this.nonSpamWordCount = nonSpamWordCount;
-    }
 }
