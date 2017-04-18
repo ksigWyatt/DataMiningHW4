@@ -7,5 +7,7 @@
 *.iml
 
 #ignore any future created txt files, unless we need them
-/data
+/models
 *.txt
+
+data/
