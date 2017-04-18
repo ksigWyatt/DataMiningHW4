@@ -2,6 +2,7 @@ package models;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -12,10 +13,12 @@ import java.util.StringTokenizer;
 public class WordCounts {
     HashMap<String, Integer> spamWordCount; // maps a string to a integer i.e the word count
     HashMap<String, Integer> nonSpamWordCount;
+    ArrayList<FileWordCount> fileWordCounts;
 
     public WordCounts(){
         spamWordCount = new HashMap<>();
         nonSpamWordCount = new HashMap<>();
+        fileWordCounts = new ArrayList<>();
     }
 
     /**
@@ -26,33 +29,28 @@ public class WordCounts {
         File folder = new File("data/train/");
         Scanner scan;
         String str;
+        StringTokenizer stringTokenizer;
+        int val;
 
         for(File file : folder.listFiles()){
-            if(file.getName().contains("spm")){ // if it contains spm it is a spam file
-                scan = new Scanner(file); // read the file
-                while (scan.hasNext()) { // scan each line of the file
-                    StringTokenizer stringTokenizer = new StringTokenizer(scan.nextLine()); // tokenize the line read
-                    while (stringTokenizer.hasMoreTokens()){ // go through each token
-                        str = stringTokenizer.nextToken();
+            scan = new Scanner(file); // read the file
+            while (scan.hasNext()) { // scan each line of the file
+                stringTokenizer = new StringTokenizer(scan.nextLine()); // tokenize the line read
+                while (stringTokenizer.hasMoreTokens()){ // go through each token
+                    str = stringTokenizer.nextToken();
+                    if(file.getName().contains("spm")) {
                         if(spamWordCount.containsKey(str)){
-                            int value = spamWordCount.get(str);
-                            spamWordCount.put(str, ++value);
+                            val = spamWordCount.get(str) + 1;
+                            spamWordCount.put(str,val);
                         } else {
-                            spamWordCount.put(str, 1);
+                            spamWordCount.put(str,1);
                         }
-                    }
-                }
-            } else {
-                scan = new Scanner(file); // read the file
-                while (scan.hasNext()) { // scan each line of the file
-                    StringTokenizer stringTokenizer = new StringTokenizer(scan.nextLine()); // tokenize the line read
-                    while (stringTokenizer.hasMoreTokens()){ // go through each token
-                        str = stringTokenizer.nextToken().trim();
+                    } else {
                         if(nonSpamWordCount.containsKey(str)){
-                            int value = nonSpamWordCount.get(str);
-                            nonSpamWordCount.put(str, ++value);
+                            val = nonSpamWordCount.get(str) + 1;
+                            nonSpamWordCount.put(str,val);
                         } else {
-                            nonSpamWordCount.put(str, 1);
+                            nonSpamWordCount.put(str,1);
                         }
                     }
                 }
