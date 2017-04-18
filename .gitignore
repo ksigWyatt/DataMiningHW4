@@ -11,3 +11,5 @@
 *.txt
 
 data/
+
+out/
