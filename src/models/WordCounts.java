@@ -12,13 +12,13 @@ import java.util.StringTokenizer;
  */
 public class WordCounts {
     HashMap<String, Integer> spamWordCount; // maps a string to a integer i.e the word count
-    HashMap<String, Integer> nonSpamWordCount;
-    ArrayList<FileWordCount> fileWordCounts;
+    HashMap<String, Integer> hamWordCount;
+    int hamFileCount = 0;
+    int spamFileCount = 0;
 
     public WordCounts(){
         spamWordCount = new HashMap<>();
-        nonSpamWordCount = new HashMap<>();
-        fileWordCounts = new ArrayList<>();
+        hamWordCount = new HashMap<>();
     }
 
     /**
@@ -31,29 +31,36 @@ public class WordCounts {
         String str;
         StringTokenizer stringTokenizer;
         int val;
-
+        ArrayList<String> seenWords;
         for(File file : folder.listFiles()){
             scan = new Scanner(file); // read the file
             while (scan.hasNext()) { // scan each line of the file
                 stringTokenizer = new StringTokenizer(scan.nextLine()); // tokenize the line read
+                seenWords = new ArrayList<String>();
                 while (stringTokenizer.hasMoreTokens()){ // go through each token
-                    str = stringTokenizer.nextToken();
-                    if(file.getName().contains("spm")) {
-                        if(spamWordCount.containsKey(str)){
+                    str = stringTokenizer.nextToken();// get the value of the token
+                    if(file.getName().contains("spm")) { // if the file is a spam file add the word to spamCount
+                        if(spamWordCount.containsKey(str) && !seenWords.contains(str)){
                             val = spamWordCount.get(str) + 1;
                             spamWordCount.put(str,val);
                         } else {
                             spamWordCount.put(str,1);
                         }
                     } else {
-                        if(nonSpamWordCount.containsKey(str)){
-                            val = nonSpamWordCount.get(str) + 1;
-                            nonSpamWordCount.put(str,val);
+                        if(hamWordCount.containsKey(str) && !seenWords.contains(str)){ // if it is a ham add to hamCount
+                            val = hamWordCount.get(str) + 1;
+                            hamWordCount.put(str,val);
                         } else {
-                            nonSpamWordCount.put(str,1);
+                            hamWordCount.put(str,1);
                         }
                     }
+                    seenWords.add(str);
                 }
+            }
+            if(file.getName().contains("spm")){
+                spamFileCount++;
+            } else {
+                hamFileCount++;
             }
         }
     }
@@ -63,8 +70,15 @@ public class WordCounts {
     }
 
 
-    public HashMap<String, Integer> getNonSpamWordCount() {
-        return nonSpamWordCount;
+    public HashMap<String, Integer> getHamWordCount() {
+        return hamWordCount;
     }
 
+    public int getHamFileCount() {
+        return hamFileCount;
+    }
+
+    public int getSpamFileCount() {
+        return spamFileCount;
+    }
 }

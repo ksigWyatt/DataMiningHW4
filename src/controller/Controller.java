@@ -1,6 +1,9 @@
 package controller;
 
 import models.WordCounts;
+import services.NavieBayesSpamAlgo;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 
 /**
@@ -8,7 +11,7 @@ import java.io.FileNotFoundException;
  */
 public class Controller {
     WordCounts wordCount;
-
+    NavieBayesSpamAlgo navieBayes;
     public Controller(WordCounts counts){
         wordCount = counts;
     }
@@ -16,8 +19,12 @@ public class Controller {
     public void runApp(){
         try {
             wordCount.wordsSet();
-            for(String s : wordCount.getNonSpamWordCount().keySet()){
-                System.out.println(s + " " + wordCount.getNonSpamWordCount().get(s));
+            navieBayes = new NavieBayesSpamAlgo(wordCount.getSpamWordCount(), wordCount.getHamWordCount());
+            File folder = new File("data/train");
+
+            for(File file : folder.listFiles()) {
+                navieBayes.classifiy(file);
+                break; // just see one file
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
