@@ -7,9 +7,7 @@ import services.KNNAlgo;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-/**
- * Created by My Surface on 4/17/2017.
- */
+
 public class Controller {
     WordCounts wordCount;
     NaiveBayes navieBayes;
@@ -20,19 +18,25 @@ public class Controller {
 
     public void runApp(){
         try {
-            wordCount.wordsSet();
-            navieBayes = new NavieBayesSpamAlgo(wordCount.getSpamWordCount(), wordCount.getHamWordCount());
-            knn = new KNNAlgo(wordCount.getSpamWordCount(), wordCount.getHamWordCount());
+            // naive bayes
             File folder = new File("data/train");
             wordCount.wordsSet(folder.listFiles());
             navieBayes = new NaiveBayes(wordCount);
-            navieBayes.classify();
+            navieBayes.classify();		// getting 86.97% accuracy when I run this BTW
             navieBayes.results();
+            
+            wordCount.wordsSet(folder.listFiles());
+            knn = new KNNAlgo(wordCount);
+            knn.classifyKNN();		
+            knn.results();
+            
+            //not sure why this is in here twice
+//            wordCount.wordsSet(folder.listFiles());
+//            navieBayes = new NaiveBayes(wordCount);
+//            navieBayes.classify();
+//            navieBayes.results();
 
-            for(File file : folder.listFiles()) {
-                knn.classifyKNN(file);
-                break; // just see one file
-            }
+     
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
