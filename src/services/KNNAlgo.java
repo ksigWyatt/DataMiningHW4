@@ -1,38 +1,80 @@
 package services;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
-import java.util.Scanner;
-import java.util.StringTokenizer;
-import java.math.*;
+import models.FileData;
+import models.WordCounts;
 
 /**
  * Created by My Surface on 4/17/2017.
  */
 public class KNNAlgo {
 	
+	private double hamClass; // true ham
+	private double spamClass; // true spam
+	private double falseHam; // false ham
+	private double falseSpam; // false spam
+	
     HashMap<String, Integer> spam;
     HashMap<String, Integer> ham;
-    int totalHam;
-    int totalSpam;
-    public static final int HAM = 0;
-    public static final int SPAM = 1;
+    
+    private WordCounts counts;
+
+    public KNNAlgo(WordCounts counts) {
+        this.counts = counts;
+    }
+
 	
-	 public KNNAlgo(HashMap<String, Integer> spam, HashMap<String, Integer> ham) {
-	        this.ham = ham;
-	        totalHam = ham.size();
-	        this.spam = spam;
-	        totalSpam = spam.size();
-	    }
-	 
-	 public Double classifyKNN(File file)throws FileNotFoundException {
-		 Double distance = 0.0;
+	 public void classifyKNN() throws FileNotFoundException {
+		 	
+		 int numWords = counts.getSpamWord().size() + counts.getHamWord().size(); // total number of words
 		 
-		 //this is wher ewe would calculate the KNN nearest neighbor and return it's distance
-		 distance = Math.sqrt(Math.pow((totalHam - totalSpam), 2));
+		 //in case we need it
+//	     double spamWordProbability = (double)counts.getSpamWord().size() / (double)numWords; // probability a word is ham
+//	     double hamWordProbability = (double)counts.getHamWord().size() / (double)numWords; // probability the word is spam
+		
+	     for (FileData data : counts.getFiles()) {
+	    	 double[] distance = new double[numWords];
+	    	 
+	    	 for (String s : data.getWords()) {
+
+	    		 double dist = Math.sqrt(Math.pow(((double)counts.getHamWord().getOrDefault(s,0) / 
+	    				 							(double)counts.getHamWord().size()), 2));
+	    		 
+	    		 
+	    	 }
+	    	 
+	    	 // need to reconfigure the parenthesis bit of this if statement to get it to where it will do anything useful
+/*	    	 if (dist == 0.0) {
+	    		 //do something if the distance is equal to zero
+	    	 
+	    	  	System.out.println(data.getName() + " is classified as HAM");
+                if (data.getName().contains("spmsg")) {
+                    falseHam++; // incorrect classifications
+                } else {
+                    hamClass++; // correct classifications
+                }
+           	} else {
+                System.out.println(data.getName() + " is classified as SPAM");
+                if (data.getName().contains("spmsg")) {
+                    spamClass++; // correct
+                } else {
+                    falseSpam++; // incorrect
+                }
+            }
+*/
+	     }
 		 
-		 return distance;
 	 }
+
+//		not needed just yet until we can get the algo working
+	public void results() {
+//		double accuracy = (hamClass + spamClass) / (falseHam + falseSpam + hamClass + spamClass);
+//		System.out.printf("The Accuracy of this run was: %.2f\n", accuracy * 100);
+//        System.out.println("Number of emails classified as Ham: " + hamClass);
+//        System.out.println("Number of emails classified as Spam: " + spamClass);
+//        System.out.println("Number of false Ham: " + falseHam);
+//        System.out.println("Number of false Spam: " + falseSpam);
+	}
 
 }
