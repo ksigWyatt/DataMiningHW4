@@ -28,13 +28,21 @@ public class Controller {
             
             knn = new KNNAlgo(wordCount.getSpamWord(), wordCount.getHamWord());
             navieBayes = new NaiveBayes(wordCount);
-            navieBayes.classify();
+            navieBayes.classify();		// getting 86.97% accuracy when I run this BTW
             navieBayes.results();
+            
+            wordCount.wordsSet(folder.listFiles());
+            knn = new KNNAlgo(wordCount);
+            knn.classifyKNN();		
+            knn.results();
+            
+            //not sure why this is in here twice
+//            wordCount.wordsSet(folder.listFiles());
+//            navieBayes = new NaiveBayes(wordCount);
+//            navieBayes.classify();
+//            navieBayes.results();
 
-            for(File file : folder.listFiles()) {
-                knn.classifyKNN(file);
-                break; // just see one file
-            }
+     
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
