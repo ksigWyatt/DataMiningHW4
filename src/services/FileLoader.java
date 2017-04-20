@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Created by My Surface on 4/19/2017.
+ * Used to load the files into memory
  */
 public class FileLoader {
-    ArrayList<FileData> files;
+    ArrayList<FileData> files; // holds the info we need for the email
     public void loadFiles(File[] folder) throws FileNotFoundException {
         files = new ArrayList<>();
         ArrayList<String> words;
@@ -27,6 +27,7 @@ public class FileLoader {
             files.add(new FileData(words, file.getName()));
         }
     }
+
 
     public ArrayList<FileData> getFiles() {
         return files;

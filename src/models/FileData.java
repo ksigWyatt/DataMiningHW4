@@ -3,11 +3,11 @@ package models;
 import java.util.ArrayList;
 
 /**
- * Created by My Surface on 4/18/2017.
+ * Used to hold the file information
  */
 public class FileData {
-    ArrayList<String> words;
-    String name;
+    private ArrayList<String> words;
+    private String name;
 
     public FileData(ArrayList<String> words, String name) {
         this.words = words;
@@ -22,11 +22,16 @@ public class FileData {
         return name;
     }
 
+    /**
+     * Used to print out the file content
+     * @return the info contained in the file
+     */
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        sb.append(name + "\n");
+        sb.append("\n");
         for(String s : words){
-            sb.append(s + " ");
+            sb.append(s);
+            sb.append(" ");
         }
 
         return sb.toString();
