@@ -3,6 +3,8 @@ package services;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.StringTokenizer;
+
 import models.FileData;
 import models.Model;
 
@@ -16,19 +18,30 @@ public class KNNAlgo {
 	private double falseHam; // false ham
 	private double falseSpam; // false spam
 	
-    HashMap<String, Integer> spam;
-    HashMap<String, Integer> ham;
-    
-    private Model counts;
+    Model emailModel;
 
-    public KNNAlgo(Model counts) {
-        this.counts = counts;
-    }
+	public void train(ArrayList<FileData> files){
+		emailModel = new Model();
+		StringTokenizer st;
+		String str;
+		for(FileData file : files){
+			for(String line : file.getWords()){
+				st = new StringTokenizer(line);
+				while(st.hasMoreTokens()){
+					str = st.nextToken();
+					if(file.getName().contains("sp")){
+						emailModel.addSpam(str);
+					} else {
+						emailModel.addHam(str);
+					}
+				}
+			}
+		}
+	}
 
-	
 	 public void classifyKNN(ArrayList<FileData> files) throws FileNotFoundException {
 		 	
-		 int numWords = counts.getSpam().size() + counts.getHam().size(); // total number of words
+		 int numWords = emailModel.getSpam().size() + emailModel.getHam().size(); // total number of words
 		 
 		 //in case we need it
 //	     double spamWordProbability = (double)counts.getSpamWord().size() / (double)numWords; // probability a word is ham
@@ -39,8 +52,8 @@ public class KNNAlgo {
 	    	 
 	    	 for (String s : data.getWords()) {
 
-	    		 double dist = Math.sqrt(Math.pow(((double)counts.getHam().getOrDefault(s,0.0) /
-	    				 							(double)counts.getSpam().size()), 2));
+	    		 double dist = Math.sqrt(Math.pow(((double)emailModel.getHam().getOrDefault(s,0.0) /
+	    				 							(double)emailModel.getSpam().size()), 2));
 	    		 
 	    		 
 	    	 }
