@@ -53,4 +53,12 @@ public class Model {
     public  double probabilityOfSpam(){
         return (double)spam.size() / ((double)ham.size() + (double)spam.size());
     }
+
+    public HashMap<String, Double> getHam() {
+        return ham;
+    }
+
+    public HashMap<String, Double> getSpam() {
+        return spam;
+    }
 }
