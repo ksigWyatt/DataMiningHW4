@@ -1,6 +1,6 @@
 package controller;
-
-import models.WordCounts;
+import models.FileData;
+import services.FileLoader;
 import services.NaiveBayes;
 import services.KNNAlgo;
 
@@ -9,32 +9,33 @@ import java.io.FileNotFoundException;
 
 
 public class Controller {
-    WordCounts wordCount;
     NaiveBayes navieBayes;
     KNNAlgo knn;
-    public Controller(WordCounts counts){
-        wordCount = counts;
+    public Controller(){
+
     }
 
     public void runApp(){
         try {
-            // naive bayes
+            System.out.println("Loading the files...");
             File folder = new File("data/train");
-            wordCount.wordsSet(folder.listFiles());
-            wordCount.wordsSet(folder.listFiles());
-            navieBayes = new NaiveBayes(wordCount);
-            navieBayes.classify();
-            navieBayes.results();
-            
-            knn = new KNNAlgo(wordCount.getSpamWord(), wordCount.getHamWord());
-            navieBayes = new NaiveBayes(wordCount);
-            navieBayes.classify();
+            FileLoader loader = new FileLoader();
+            loader.loadFiles(folder.listFiles());
+
+            System.out.println("Building model...");
+            navieBayes = new NaiveBayes();
+            navieBayes.train(loader.getFiles()); // train using the training dataset we just read in
+            navieBayes.classify(loader.getFiles());
             navieBayes.results();
 
-            for(File file : folder.listFiles()) {
-                knn.classifyKNN(file);
-                break; // just see one file
-            }
+            System.out.println("Running test...");
+            folder = new File("data/test");
+            loader.loadFiles(folder.listFiles());
+            navieBayes.classify(loader.getFiles());
+            navieBayes.classify(loader.getFiles());
+            navieBayes.results();
+
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
