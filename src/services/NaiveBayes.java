@@ -1,14 +1,14 @@
 package services;
 
 import models.FileData;
-import models.Model;
+import models.NaiveBayesModel;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 
 public class NaiveBayes {
 
-    Model emailModel;
+    NaiveBayesModel emailModel;
 
     private double trueHam;
     private double trueSpam;
@@ -16,7 +16,7 @@ public class NaiveBayes {
     double falseSpam;
 
     public void train(ArrayList<FileData> files){
-        emailModel = new Model();
+        emailModel = new NaiveBayesModel();
         StringTokenizer st;
         String str;
         ArrayList<String> seen;

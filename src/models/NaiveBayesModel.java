@@ -2,7 +2,7 @@ package models;
 
 import java.util.HashMap;
 
-public class Model {
+public class NaiveBayesModel {
 
     HashMap<String,Double> ham;
     HashMap<String,Double> spam;
@@ -11,7 +11,7 @@ public class Model {
     double m = 3;
     double p = 1/5.0;
 
-    public Model(){
+    public NaiveBayesModel(){
         ham = new HashMap<>();
         spam = new HashMap<>();
     }
