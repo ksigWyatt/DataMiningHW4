@@ -1,17 +1,12 @@
 package services;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import models.FileData;
 import models.KNNModel;
-import models.NaiveBayesModel;
 
-/**
- * Created by My Surface on 4/17/2017.
- */
+
 public class KNNAlgo {
 	
 	private double hamClass; // true ham
@@ -42,14 +37,17 @@ public class KNNAlgo {
 		        
         for(FileData file : files){
             seen = new ArrayList<>();
-            for(String line : file.getWords()){
+            for(String line : file.getWords()) {
+            	
                 st = new StringTokenizer(line);
-                while(st.hasMoreTokens()){
+                
+                while(st.hasMoreTokens()) {
                     str = st.nextToken();
 
                     if (!seen.contains(str)) {
                     	model.addWord(str);
-                    } else {
+                    } 
+                    else {
                     	model.addWord(str);
                     }
 
