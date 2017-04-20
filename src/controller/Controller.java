@@ -38,9 +38,9 @@ public class Controller {
         try {
             // -----------------------------------Naive-Bayes NO FILTER----------------------------//
             loadData(); // load the files into memory
-            nonFilteredNaiveBayes(); // run nonFiltered naive bayes classifier
+          //  nonFilteredNaiveBayes(); // run nonFiltered naive bayes classifier
             System.out.println(); // run filtered naive bayes classifier
-            filteredNaiveBayes();// run filtered naive bayes classifier
+           // filteredNaiveBayes();// run filtered naive bayes classifier
             // -----------------------------------Naive-Bayes FILTER----------------------------//
 
             System.out.println();
@@ -49,8 +49,8 @@ public class Controller {
 
             knn = new KNNAlgo();
             knn.train(trainingLoader.getFiles(), testLoader.getFiles());
-//            knn.classifyKNN(trainingLoader.getFiles());
-//            knn.results();
+            knn.classifyKNN(trainingLoader.getFiles(),1);
+            knn.results();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

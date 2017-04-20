@@ -1,22 +1,20 @@
 package services;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.StringTokenizer;
+import java.util.*;
+
 import models.FileData;
 import models.KNNModel;
+import models.TermVector;
 
 public class KNNAlgo {
 
-	// private double hamClass; // true ham
-	// private double spamClass; // true spam
-	//
-	// private double trueHam;
-	// private double trueSpam;
-	double falseHam;
-	double falseSpam;
+	private double trueHam; // counts emails that were classified correctly as ham
+	private double trueSpam; // counts emails that were classified correctly as spam
+	private double falseHam; // counts emails that were classified incorrectly as ham
+	private double falseSpam; // counts emails that were classified incorrectly as spam
 
 	HashMap<String, Integer> terms; // words / frequencies in all docs
+	ArrayList<TermVector> testingVectors;
 
 	KNNModel model;
 
@@ -26,121 +24,124 @@ public class KNNAlgo {
 
 	public void train(ArrayList<FileData> train, ArrayList<FileData> test) {
 
-		HashMap<String, Integer> fileWordCount;
-
 		model = new KNNModel();
-		StringTokenizer st;
-		String str;
-		int index = 0;
-		String key;
-		int[] termVector;
-
+		
 		for (FileData file : train) {
-
 			for (String line : file.getWords()) {
-
-				st = new StringTokenizer(line);
-
+				StringTokenizer st = new StringTokenizer(line);
+				int index = 0;
 				while (st.hasMoreTokens()) {
-					str = st.nextToken();
-
+					String str = st.nextToken();
 					model.addWord(str);
-
 					if (!model.termIndecies.containsKey(str)) {
 						model.termIndecies.put(str, index);
 						index++;
 					}
-
 				}
 			}
 		}
 
 		for (FileData file : test) {
-
 			for (String line : file.getWords()) {
-
-				st = new StringTokenizer(line);
-
+				StringTokenizer st = new StringTokenizer(line);
+				int index = 0;
 				while (st.hasMoreTokens()) {
-					str = st.nextToken();
-
+					String str = st.nextToken();
 					model.addWord(str);
-
 					if (!model.termIndecies.containsKey(str)) {
 						model.termIndecies.put(str, index);
 						index++;
 					}
-
 				}
 			}
 		}
 
 		for (FileData file : train) {
-			fileWordCount = new HashMap<>();
-
+			HashMap<String, Integer>fileWordCount = new HashMap<>();
 			for (String line : file.getWords()) {
-
-				st = new StringTokenizer(line);
-
+				StringTokenizer st = new StringTokenizer(line);
 				while (st.hasMoreTokens()) {
-					str = st.nextToken();
-
+					String str = st.nextToken();
 					fileWordCount.put(str, fileWordCount.getOrDefault(str, 0) + 1);
-
 				}
 			}
-			
-			termVector = new int[model.termIndecies.size()];
-			
+			int[] termVector = new int[model.termIndecies.size()];
+            Object[] keySet = model.termIndecies.keySet().toArray();
 			for (int i = 0; i < termVector.length; i++) {
-				key = (String)model.termIndecies.keySet().toArray()[i];
-				termVector[i] = fileWordCount.getOrDefault(key, 0);
+				termVector[i] = fileWordCount.getOrDefault(keySet[i], 0);
 			}
-			model.termVectors.add(termVector);
+			model.trainingTermVectors.add(new TermVector(termVector, file.getName().contains("sp")));
 		}
-		
+
+		testingVectors = new ArrayList<>();
 		for (FileData file : test) {
-			fileWordCount = new HashMap<>();
+			HashMap<String, Integer>fileWordCount = new HashMap<>();
 
 			for (String line : file.getWords()) {
-
-				st = new StringTokenizer(line);
-
+				StringTokenizer st = new StringTokenizer(line);
 				while (st.hasMoreTokens()) {
-					str = st.nextToken();
-
+					String str = st.nextToken();
 					fileWordCount.put(str, fileWordCount.getOrDefault(str, 0) + 1);
-
 				}
 			}
-			
-			termVector = new int[model.termIndecies.size()];
-			
+
+			int[] termVector = new int[model.termIndecies.size()];
+			Object[] keySet = model.termIndecies.keySet().toArray();
 			for (int i = 0; i < termVector.length; i++) {
-				key = (String)model.termIndecies.keySet().toArray()[i];
-				termVector[i] = fileWordCount.getOrDefault(key, 0);
+				termVector[i] = fileWordCount.getOrDefault(keySet[i], 0);
 			}
-			model.termVectors.add(termVector);
+			TermVector vector = new TermVector(termVector);
+			testingVectors.add(vector);
 		}
-		
 	}
 
-	public void classifyKNN(ArrayList<FileData> files) {
+	public void classifyKNN(ArrayList<FileData> files, int k) {
 
+		trueSpam = 0;
+		trueHam = 0;
+		falseSpam = 0;
+		falseHam = 0;
+
+		int file = 0;
+		for (TermVector vector : testingVectors) {
+			int spam = 0;
+			int ham = 0;
+
+			model.trainingTermVectors.sort((r, l) -> r.cosineSimilarity(vector) < l.cosineSimilarity(vector) ? 1 : -1);
+
+			for (int i = 0; i < k; i++) {
+				if (model.trainingTermVectors.get(i).isSpam()) {
+					spam++;
+				} else {
+					ham++;
+				}
+			}
+
+			if (ham > spam) {
+				if (files.get(file).getName().contains("sp")) {
+					falseHam++;
+				} else {
+					trueHam++;
+				}
+			} else {
+				if (files.get(file).getName().contains("sp")) {
+					trueSpam++;
+				} else {
+					falseSpam++;
+				}
+			}
+		}
 	}
 
-	// not needed just yet until we can get the algo working
-	public void results() {
-		// double accuracy = (hamClass + spamClass) / (falseHam + falseSpam +
-		// hamClass + spamClass);
-		// System.out.printf("The Accuracy of this run was: %.2f\n", accuracy *
-		// 100);
-		// System.out.println("Number of emails classified as Ham: " +
-		// hamClass);
-		// System.out.println("Number of emails classified as Spam: " +
-		// spamClass);
-		// System.out.println("Number of false Ham: " + falseHam);
-		// System.out.println("Number of false Spam: " + falseSpam);
+	/**
+	 * Print our results and output the accuracy
+	 */
+	public void results(){
+		System.out.println("Number of true ham: " + trueHam);
+		System.out.println("Number of true spam: " + trueSpam);
+		System.out.println("Number of false ham: " + falseHam);
+		System.out.println("Number of false spam: " + falseSpam);
+		double accuracy = (trueHam + trueSpam) / (trueSpam + trueHam + falseHam + falseSpam);
+		System.out.println("The accuracy of this run was " + accuracy);
 	}
-
 }

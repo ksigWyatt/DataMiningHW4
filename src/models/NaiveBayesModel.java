@@ -21,7 +21,7 @@ public class NaiveBayesModel {
      * @param word the word we wish to add or increment value
      */
     public void addHam(String word){
-        ham.put(word,(ham.getOrDefault(word,0.0) + 1));
+        ham.put(word,(ham.getOrDefault(word,1.0) + 1));
     }
 
     /**
@@ -29,7 +29,7 @@ public class NaiveBayesModel {
      * @param word the word we wish to add or increment the value
      */
     public void addSpam(String word){
-        spam.put(word,(spam.getOrDefault(word,0.0) + 1));
+        spam.put(word,(spam.getOrDefault(word,1.0) + 1));
     }
 
     /**
