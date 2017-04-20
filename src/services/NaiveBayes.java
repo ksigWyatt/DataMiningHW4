@@ -2,9 +2,7 @@ package services;
 
 import models.FileData;
 import models.Model;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.StringTokenizer;
 
 
@@ -17,25 +15,51 @@ public class NaiveBayes {
     double falseHam;
     double falseSpam;
 
-    HashMap<String,Integer> testWordCount;
-
     public void train(ArrayList<FileData> files){
         emailModel = new Model();
         StringTokenizer st;
         String str;
+        ArrayList<String> seen;
+        double numSpam = 0;
+        double numHam = 0;
         for(FileData file : files){
+            seen = new ArrayList<>();
             for(String line : file.getWords()){
                 st = new StringTokenizer(line);
                 while(st.hasMoreTokens()){
                     str = st.nextToken();
-                    if(file.getName().contains("sp")){
+
+                    if (file.getName().contains("sp") && !seen.contains(str)) {
                         emailModel.addSpam(str);
-                    } else {
+                    } else if(!file.getName().contains("sp") && !seen.contains(str)){
                         emailModel.addHam(str);
                     }
+
+                    seen.add(str);
                 }
             }
+
+            if(file.getName().contains("sp")){
+                numSpam++;
+            } else {
+                numHam++;
+            }
         }
+
+        emailModel.setNumHamEmails(numHam);
+        emailModel.setNumSpamEmails(numSpam);
+
+//        for(String s : emailModel.getHam().keySet()){
+//            System.out.println(s + " " + emailModel.getHam().get(s));
+//        }
+//        System.out.println(emailModel.getHam().keySet().size());
+//
+//        System.out.println();
+//
+//        for(String s : emailModel.getSpam().keySet()){
+//            System.out.println(s + " " + emailModel.getSpam().get(s));
+//        }
+//        System.out.println(emailModel.getSpam().keySet().size());
     }
 
     public void classify(ArrayList<FileData> files){
@@ -63,8 +87,21 @@ public class NaiveBayes {
                 st = new StringTokenizer(line);
                 while(st.hasMoreTokens()){
                     word = st.nextToken();
-                    spamProbability += Math.log(emailModel.probabilityOfWordGivenSpam(word));
-                    hamProbability += Math.log(emailModel.probabilityOfWordGivenHam(word));
+
+                    double val = (emailModel.probabilityOfWordGivenSpam(word));
+                    if(val == 0){
+                        val = emailModel.mEstimateSpam();
+                    }
+                    val = Math.log(val);
+                    spamProbability += val;
+
+                    val = (emailModel.probabilityOfWordGivenHam(word));
+                    if(val == 0){
+                        val = emailModel.mEstimateHam();
+                    }
+                    val = Math.log(val);
+                    hamProbability += val;
+
                 }
             }
 

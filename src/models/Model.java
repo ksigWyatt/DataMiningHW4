@@ -2,16 +2,14 @@ package models;
 
 import java.util.HashMap;
 
-/**
- * Created by My Surface on 4/19/2017.
- */
 public class Model {
 
     HashMap<String,Double> ham;
     HashMap<String,Double> spam;
-    double m = 2;
-    double p;
-
+    double numSpamEmails;
+    double numHamEmails;
+    double m = 3;
+    double p = 1/5.0;
 
     public Model(){
         ham = new HashMap<>();
@@ -27,31 +25,27 @@ public class Model {
     }
 
     public double probabilityOfWordGivenSpam(String word){
-        double probabilityOfWordGivenSpam = spam.getOrDefault(word,mEstimateSpam()) / (double)spam.size();
-        return probabilityOfWordGivenSpam;
+        return spam.getOrDefault(word,0.0) / numSpamEmails;
     }
 
     public double probabilityOfWordGivenHam(String word){
-        double probabilityOfWordGivenHam = ham.getOrDefault(word,mEstimateHam()) / (double)ham.size();
-        return probabilityOfWordGivenHam;
+        return ham.getOrDefault(word,0.0) / numHamEmails;
     }
 
     public double mEstimateSpam(){
-        p = 1/spam.size();
-        return (m*p) / (spam.size() + m);
+        return (m*p) / (numSpamEmails + m);
     }
 
     public double mEstimateHam(){
-        p = 1/ham.size();
-        return (m*p) / (ham.size() + m);
+        return (m*p) / (numHamEmails + m);
     }
 
     public double probabilityOfHam(){
-        return  (double)ham.size() / ((double)ham.size() + (double)spam.size());
+        return  numHamEmails / (numHamEmails + numSpamEmails);
     }
 
     public  double probabilityOfSpam(){
-        return (double)spam.size() / ((double)ham.size() + (double)spam.size());
+        return  numSpamEmails / (numHamEmails + numSpamEmails);
     }
 
     public HashMap<String, Double> getHam() {
@@ -60,5 +54,13 @@ public class Model {
 
     public HashMap<String, Double> getSpam() {
         return spam;
+    }
+
+    public void setNumSpamEmails(double numSpamEmails) {
+        this.numSpamEmails = numSpamEmails;
+    }
+
+    public void setNumHamEmails(double numHamEmails) {
+        this.numHamEmails = numHamEmails;
     }
 }
