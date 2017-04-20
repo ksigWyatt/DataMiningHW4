@@ -38,21 +38,6 @@ public class NaiveBayes {
         }
     }
 
-    public void wordCounts(ArrayList<FileData> files){
-        testWordCount = new HashMap<>();
-        for(FileData file : files) {
-            String word;
-            StringTokenizer st;
-            for (String line : file.getWords()) {
-                st = new StringTokenizer(line);
-                while (st.hasMoreTokens()) {
-                    word = st.nextToken();
-                    testWordCount.put(word,(testWordCount.getOrDefault(word,1) + 1));
-                }
-            }
-        }
-    }
-
     public void classify(ArrayList<FileData> files){
         StringTokenizer st;
         String str;
@@ -68,8 +53,6 @@ public class NaiveBayes {
         trueHam = 0;
         falseSpam = 0;
         falseHam = 0;
-
-        wordCounts(files);
 
         for(FileData file : files){
             hamProbability = 0;

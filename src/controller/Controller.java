@@ -11,35 +11,35 @@ public class Controller {
     NaiveBayes navieBayes;
     KNNAlgo knn;
     public Controller(){
-
+        navieBayes = new NaiveBayes();
     }
 
     public void runApp(){
         try {
             // -----------------------------------Naive-Bayes----------------------------//
-            System.out.println("Loading the files...");
-            File folder = new File("data/train");
+            System.out.println("Loading the training emails...");
+            File trainingFolder = new File("data/train");
             FileLoader loader = new FileLoader();
-            loader.loadFiles(folder.listFiles());
+            loader.loadFiles(trainingFolder.listFiles());
 
             System.out.println("Building model...");
-            navieBayes = new NaiveBayes();
             navieBayes.train(loader.getFiles()); // train using the training dataset we just read in
             navieBayes.classify(loader.getFiles());
             navieBayes.results();
 
+            System.out.println("Loading the test emails...");
+            File testingFolder = new File("data/test");
+            loader = new FileLoader();
+            loader.loadFiles(testingFolder.listFiles());
+
             System.out.println("Running test...");
-            folder = new File("data/test");
-            loader.loadFiles(folder.listFiles());
             navieBayes.classify(loader.getFiles());
             navieBayes.results();
 
             System.out.println();
 
             //------------------------------Knn-----------------------------------------//
-            folder = new File("data/train");
-            loader = new FileLoader();
-            loader.loadFiles(folder.listFiles());
+            loader.loadFiles(trainingFolder.listFiles());
 
             knn = new KNNAlgo();
             knn.train(loader.getFiles());
