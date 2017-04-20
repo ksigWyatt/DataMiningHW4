@@ -46,11 +46,10 @@ public class Controller {
             System.out.println();
 
             //------------------------------Knn-----------------------------------------//
-//            loader.loadFiles(trainingFolder.listFiles());
-//
-//            knn = new KNNAlgo();
-//            knn.train(loader.getFiles());
-//            knn.classifyKNN(loader.getFiles());
+
+            knn = new KNNAlgo();
+            knn.train(trainingLoader.getFiles(), testLoader.getFiles());
+//            knn.classifyKNN(trainingLoader.getFiles());
 //            knn.results();
 
         } catch (FileNotFoundException e) {
