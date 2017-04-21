@@ -13,51 +13,52 @@ public class KNNAlgo {
 	private double falseHam; // counts emails that were classified incorrectly as ham
 	private double falseSpam; // counts emails that were classified incorrectly as spam
 
-	HashMap<String, Integer> terms; // words / frequencies in all docs
-	ArrayList<TermVector> testingVectors;
+	ArrayList<TermVector> testingVectors; // contains the testing emails as term vectors
 
-	KNNModel model;
+	KNNModel model; // model we built in training
 
-	public KNNAlgo() {
-		terms = new HashMap<>();
-	}
-
+	/**
+	 * Used to build our model. Also used to vectorize the testing emails since we are already here looking at those files
+	 * @param train the training emails
+	 * @param test the testing emails
+	 */
 	public void train(ArrayList<FileData> train, ArrayList<FileData> test) {
+		model = new KNNModel(); // model we are going to build
+		testingVectors = new ArrayList<>(); // the testing vectors
 
-		model = new KNNModel();
-		
+		// find all the words in the training emails and index them
 		for (FileData file : train) {
 			for (String line : file.getWords()) {
 				StringTokenizer st = new StringTokenizer(line);
 				int index = 0;
 				while (st.hasMoreTokens()) {
 					String str = st.nextToken();
-					model.addWord(str);
-					if (!model.termIndecies.containsKey(str)) {
-						model.termIndecies.put(str, index);
+					if (!model.getTermIndecies().containsKey(str)) {
+						model.getTermIndecies().put(str, index);
 						index++;
 					}
 				}
 			}
 		}
 
+		// find all the words in the testing emails and index them
 		for (FileData file : test) {
 			for (String line : file.getWords()) {
 				StringTokenizer st = new StringTokenizer(line);
 				int index = 0;
 				while (st.hasMoreTokens()) {
 					String str = st.nextToken();
-					model.addWord(str);
-					if (!model.termIndecies.containsKey(str)) {
-						model.termIndecies.put(str, index);
+					if (!model.getTermIndecies().containsKey(str)) {
+						model.getTermIndecies().put(str, index);
 						index++;
 					}
 				}
 			}
 		}
 
+		// build all the term vectors in the training
 		for (FileData file : train) {
-			HashMap<String, Integer>fileWordCount = new HashMap<>();
+			HashMap<String, Integer> fileWordCount = new HashMap<>();
 			for (String line : file.getWords()) {
 				StringTokenizer st = new StringTokenizer(line);
 				while (st.hasMoreTokens()) {
@@ -65,17 +66,19 @@ public class KNNAlgo {
 					fileWordCount.put(str, fileWordCount.getOrDefault(str, 0) + 1);
 				}
 			}
-			int[] termVector = new int[model.termIndecies.size()];
-            Object[] keySet = model.termIndecies.keySet().toArray();
+			int[] termVector = new int[model.getTermIndecies().size()];
+            Object[] keySet = model.getTermIndecies().keySet().toArray();
 			for (int i = 0; i < termVector.length; i++) {
 				termVector[i] = fileWordCount.getOrDefault(keySet[i], 0);
 			}
-			model.trainingTermVectors.add(new TermVector(termVector, file.getName().contains("sp")));
+			TermVector vector = new TermVector(termVector, file.getName().contains("sp"));
+			vector.setFileName(file.getName());
+			model.getTrainingTermVectors().add(vector);
 		}
 
-		testingVectors = new ArrayList<>();
+		// build all the testing vectors using
 		for (FileData file : test) {
-			HashMap<String, Integer>fileWordCount = new HashMap<>();
+			HashMap<String, Integer> fileWordCount = new HashMap<>();
 
 			for (String line : file.getWords()) {
 				StringTokenizer st = new StringTokenizer(line);
@@ -85,49 +88,57 @@ public class KNNAlgo {
 				}
 			}
 
-			int[] termVector = new int[model.termIndecies.size()];
-			Object[] keySet = model.termIndecies.keySet().toArray();
+			int[] termVector = new int[model.getTermIndecies().size()];
+			Object[] keySet = model.getTermIndecies().keySet().toArray();
 			for (int i = 0; i < termVector.length; i++) {
 				termVector[i] = fileWordCount.getOrDefault(keySet[i], 0);
 			}
 			TermVector vector = new TermVector(termVector);
+			vector.setFileName(file.getName());
 			testingVectors.add(vector);
 		}
 	}
 
-	public void classifyKNN(ArrayList<FileData> files, int k) {
+	/**
+	 * used to classify the testing vectors given a value k
+	 * @param k
+	 */
+	public void classifyKNN(int k) {
 
 		trueSpam = 0;
 		trueHam = 0;
 		falseSpam = 0;
 		falseHam = 0;
 
-		int file = 0;
-		for (TermVector vector : testingVectors) {
-			int spam = 0;
-			int ham = 0;
+		// loop through the arry of testing vectors
+		for(TermVector vector : testingVectors){
+			double spam = 0;
+			double ham = 0;
 
-			model.trainingTermVectors.sort((r, l) -> r.cosineSimilarity(vector) < l.cosineSimilarity(vector) ? 1 : -1);
+			// sort the model using the cosine similarity
+			model.getTrainingTermVectors().sort((l,r) -> l.cosineSimilarity(vector) < r.cosineSimilarity(vector) ? 1 : -1);
 
-			for (int i = 0; i < k; i++) {
-				if (model.trainingTermVectors.get(i).isSpam()) {
+			// add up all the nearest neighbors class
+			for(int i = 0; i < k; i++){
+				if(model.getTrainingTermVectors().get(i).getFileName().contains("sp")){
 					spam++;
 				} else {
 					ham++;
 				}
 			}
 
-			if (ham > spam) {
-				if (files.get(file).getName().contains("sp")) {
-					falseHam++;
-				} else {
-					trueHam++;
-				}
-			} else {
-				if (files.get(file).getName().contains("sp")) {
+			// calculate the accuracy of the run
+			if(spam > ham){
+				if(vector.getFileName().contains("spmsg")){
 					trueSpam++;
 				} else {
 					falseSpam++;
+				}
+			} else {
+				if(vector.getFileName().contains("spmsg")){
+					falseHam++;
+				} else {
+					trueHam++;
 				}
 			}
 		}

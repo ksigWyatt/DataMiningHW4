@@ -34,29 +34,38 @@ public class Controller {
         System.out.println();
     }
 
+    /**
+     * Used to run the application
+     */
     public void runApp() {
         try {
             // -----------------------------------Naive-Bayes NO FILTER----------------------------//
             loadData(); // load the files into memory
-          //  nonFilteredNaiveBayes(); // run nonFiltered naive bayes classifier
+            System.out.println("Running Naive-Bayes");
+            nonFilteredNaiveBayes(); // run nonFiltered naive bayes classifier
             System.out.println(); // run filtered naive bayes classifier
-           // filteredNaiveBayes();// run filtered naive bayes classifier
+            filteredNaiveBayes();// run filtered naive bayes classifier
             // -----------------------------------Naive-Bayes FILTER----------------------------//
 
             System.out.println();
 
-            //------------------------------Knn-----------------------------------------//
+            //------------------------------Knn NO Filter-----------------------------------------//
+            loadData(); // reload data since we filtered above
+            nonFilteredKNN();
+            System.out.println();
+            //------------------------------Knn Filter-----------------------------------------//
+            filteredKNN();
 
-            knn = new KNNAlgo();
-            knn.train(trainingLoader.getFiles(), testLoader.getFiles());
-            knn.classifyKNN(trainingLoader.getFiles(),1);
-            knn.results();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Runs the naive bayes classifier on non filtered data
+     * @throws FileNotFoundException
+     */
     private void nonFilteredNaiveBayes() throws FileNotFoundException {
         System.out.println("Building model...");
         naiveBayes.train(trainingLoader.getFiles()); // train using the training dataset we just read in
@@ -68,6 +77,10 @@ public class Controller {
         naiveBayes.results();
     }
 
+    /**
+     * runs the naive bayes classifier filtered data
+     * @throws FileNotFoundException
+     */
     private void filteredNaiveBayes() throws FileNotFoundException {
         System.out.println("Filtering files...");
         Filter filter = new Filter();
@@ -82,5 +95,54 @@ public class Controller {
         System.out.println("Running test...");
         naiveBayes.classify(testLoader.getFiles());
         naiveBayes.results();
+    }
+
+    /**
+     * used to run knn with non filtered data
+     */
+    private void nonFilteredKNN(){
+        System.out.println("Building model...");
+        knn = new KNNAlgo();
+        knn.train(trainingLoader.getFiles(), testLoader.getFiles());
+
+        System.out.println("Running test...");
+        System.out.println("k=1");
+        knn.classifyKNN(1);
+        knn.results();
+        System.out.println("k=3");
+        knn.classifyKNN(3);
+        knn.results();
+        System.out.println("k=5");
+        knn.classifyKNN(5);
+        knn.results();
+        System.out.println("k=20");
+        knn.classifyKNN(20);
+        knn.results();
+    }
+
+    /**
+     * used to run knn with filtered data
+     */
+    private void filteredKNN(){
+        System.out.println("Filtering files...");
+        Filter filter = new Filter();
+        filter.filterSpecialCharacters(trainingLoader.getFiles());
+        filter.filterUnCommonWords(trainingLoader.getFiles());
+
+        System.out.println("Running test...");
+        knn = new KNNAlgo();
+        knn.train(trainingLoader.getFiles(), testLoader.getFiles());
+        System.out.println("k=1");
+        knn.classifyKNN(1);
+        knn.results();
+        System.out.println("k=3");
+        knn.classifyKNN(3);
+        knn.results();
+        System.out.println("k=5");
+        knn.classifyKNN(5);
+        knn.results();
+        System.out.println("k=20");
+        knn.classifyKNN(20);
+        knn.results();
     }
 }

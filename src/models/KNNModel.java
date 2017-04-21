@@ -1,27 +1,16 @@
 package models;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class KNNModel {
-	
-	public HashMap<String, Integer> terms;
-	public LinkedHashMap<String, Integer> termIndecies; //word and an index
-	public ArrayList<TermVector> trainingTermVectors;
+
+	private LinkedHashMap<String, Integer> termIndecies; //word and an index
+	private ArrayList<TermVector> trainingTermVectors;
 	
 	public KNNModel() {
-		terms = new HashMap<>();
 		trainingTermVectors = new ArrayList<>();
 		termIndecies = new LinkedHashMap<>();
-	}
-
-	public void addWord(String word) {
-		terms.put(word, (terms.getOrDefault(word, 0) + 1));		
-	}
-
-	public HashMap<String, Integer> getTerms() {
-		return terms;
 	}
 
 	public LinkedHashMap<String, Integer> getTermIndecies() {
@@ -30,5 +19,13 @@ public class KNNModel {
 
 	public ArrayList<TermVector> getTrainingTermVectors() {
 		return trainingTermVectors;
+	}
+
+	public void setTermIndecies(LinkedHashMap<String, Integer> termIndecies) {
+		this.termIndecies = termIndecies;
+	}
+
+	public void setTrainingTermVectors(ArrayList<TermVector> trainingTermVectors) {
+		this.trainingTermVectors = trainingTermVectors;
 	}
 }
