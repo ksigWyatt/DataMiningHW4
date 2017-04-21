@@ -116,7 +116,7 @@ public class KNNAlgo {
 			double ham = 0;
 
 			// sort the model using the cosine similarity
-			model.getTrainingTermVectors().sort((l,r) -> l.cosineSimilarity(vector) < r.cosineSimilarity(vector) ? 1 : -1);
+			model.getTrainingTermVectors().sort((vector1,vector2) -> vector1.cosineSimilarity(vector) < vector2.cosineSimilarity(vector) ? 1 : -1);
 
 			// add up all the nearest neighbors class
 			for(int i = 0; i < k; i++){
