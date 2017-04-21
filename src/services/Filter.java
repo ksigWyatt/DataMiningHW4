@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 public class Filter {
+    public int numFiltered = 0;
     /**
      * Remove non-alphanumeric characters using regex in the training files
      * @param files the training
@@ -27,6 +28,7 @@ public class Filter {
      * @param files the training files
      */
     public void filterUnCommonWords(ArrayList<FileData> files){
+
         HashMap<String, Integer> wordCounts = new HashMap<>();
         StringTokenizer st;
         String str;
@@ -50,6 +52,7 @@ public class Filter {
                         line = line.replaceAll(str,"");
                         file.getWords().remove(lineNumber);
                         file.getWords().add(lineNumber,line);
+                        numFiltered++;
                     }
                 }
                 lineNumber++;

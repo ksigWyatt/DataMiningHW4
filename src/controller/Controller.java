@@ -95,6 +95,7 @@ public class Controller {
         System.out.println("Running test...");
         naiveBayes.classify(testLoader.getFiles());
         naiveBayes.results();
+        System.out.println("Number of Filtered words: " + filter.numFiltered);
     }
 
     /**
@@ -144,5 +145,7 @@ public class Controller {
         System.out.println("k=20");
         knn.classifyKNN(20);
         knn.results();
+
+        System.out.println("Number of Filtered words: " + filter.numFiltered);
     }
 }
